@@ -161,7 +161,7 @@ st.markdown("---")
 # ==========================================================
 API_URL = os.getenv(
     "API_URL",
-    "http://127.0.0.1:8000"
+    "https://industrialai-predictive-maintenance.onrender.com"
 )
 
 if predict_button:
@@ -459,94 +459,224 @@ try:
 
         st.markdown("---")
 
-        # ----------------------------
-        # Analytics
-        # ----------------------------
+        # ==========================================================
+        # ANALYTICS DASHBOARD
+        # ==========================================================
 
-        st.subheader("📈 Analytics")
+        st.subheader("📊 Industrial Analytics")
 
-        total_predictions = len(filtered_df)
+        # ----------------------------------------------------------
+        # Prepare analytics data
+        # ----------------------------------------------------------
+
+        analytics_df = filtered_df.copy()
+
+        total_predictions = len(analytics_df)
 
         failures = (
-            filtered_df["Prediction"] == "FAILURE"
+            analytics_df["Prediction"] == "FAILURE"
         ).sum()
 
         healthy = (
-            filtered_df["Prediction"] == "HEALTHY"
+            analytics_df["Prediction"] == "HEALTHY"
+        ).sum()
+
+        critical = (
+            analytics_df["Risk"] == "CRITICAL"
         ).sum()
 
         if total_predictions > 0:
-            avg_probability = filtered_df[
+
+            failure_rate = (
+                failures / total_predictions
+            ) * 100
+
+            avg_probability = analytics_df[
                 "Probability (%)"
             ].mean()
+
         else:
+
+            failure_rate = 0
             avg_probability = 0
 
-        c1, c2, c3, c4 = st.columns(4)
 
-        with c1:
+        # ----------------------------------------------------------
+        # KPI CARDS
+        # ----------------------------------------------------------
+
+        kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
+
+        with kpi1:
+
             st.metric(
                 "Total Predictions",
                 total_predictions
             )
 
-        with c2:
+        with kpi2:
+
             st.metric(
                 "Failures",
                 failures
             )
 
-        with c3:
+        with kpi3:
+
             st.metric(
                 "Healthy",
                 healthy
             )
 
-        with c4:
+        with kpi4:
+
             st.metric(
-                "Avg Failure Probability",
-                f"{avg_probability:.1f}%"
+                "Failure Rate",
+                f"{failure_rate:.1f}%"
             )
 
-        # ----------------------------
-        # Charts
-        # ----------------------------
+        with kpi5:
 
-        col_a, col_b = st.columns(2)
+            st.metric(
+                "Critical Risk",
+                critical
+            )
 
-        with col_a:
 
-            st.markdown("### Risk Distribution")
+        st.markdown("---")
 
-            risk_counts = filtered_df["Risk"].value_counts()
+
+        # ==========================================================
+        # CHARTS
+        # ==========================================================
+
+        chart_col1, chart_col2 = st.columns(2)
+
+
+        # ----------------------------------------------------------
+        # Risk Distribution
+        # ----------------------------------------------------------
+
+        with chart_col1:
+
+            st.markdown("### 🚨 Risk Distribution")
+
+            risk_counts = (
+                analytics_df["Risk"]
+                .value_counts()
+            )
 
             st.bar_chart(risk_counts)
 
-        with col_b:
 
-            st.markdown("### Prediction Distribution")
+        # ----------------------------------------------------------
+        # Prediction Distribution
+        # ----------------------------------------------------------
+
+        with chart_col2:
+
+            st.markdown("### 🤖 Machine Health")
 
             prediction_counts = (
-                filtered_df["Prediction"].value_counts()
+                analytics_df["Prediction"]
+                .value_counts()
             )
 
             st.bar_chart(prediction_counts)
 
-        st.markdown("### Failure Probability Over Time")
 
-        chart_df = filtered_df[
-            ["Timestamp", "Probability (%)"]
-        ].copy()
+        # ----------------------------------------------------------
+        # Failure Probability
+        # ----------------------------------------------------------
 
-        chart_df["Timestamp"] = pd.to_datetime(
-            chart_df["Timestamp"]
+        st.markdown("### 📈 Failure Probability Over Time")
+
+        if not analytics_df.empty:
+
+            probability_chart = analytics_df[
+                ["Timestamp", "Probability (%)"]
+            ].copy()
+
+            probability_chart["Timestamp"] = pd.to_datetime(
+                probability_chart["Timestamp"]
+            )
+
+            probability_chart = (
+                probability_chart
+                .sort_values("Timestamp")
+                .set_index("Timestamp")
+            )
+
+            st.line_chart(
+                probability_chart
+            )
+
+        else:
+
+            st.info(
+                "No prediction data available for the selected filters."
+            )
+
+
+        # ----------------------------------------------------------
+        # Machine Type Distribution
+        # ----------------------------------------------------------
+
+        st.markdown("### 🏭 Predictions by Machine Type")
+
+        machine_counts = (
+            analytics_df["Machine"]
+            .value_counts()
         )
 
-        chart_df = chart_df.sort_values("Timestamp")
+        st.bar_chart(machine_counts)
 
-        chart_df = chart_df.set_index("Timestamp")
 
-        st.line_chart(chart_df)
+        # ----------------------------------------------------------
+        # Analytics Summary
+        # ----------------------------------------------------------
+
+        st.markdown("---")
+
+        st.markdown("### 🧠 System Analytics Summary")
+
+        if total_predictions == 0:
+
+            st.info(
+                "No prediction data available for analysis."
+            )
+
+        else:
+
+            if failure_rate >= 50:
+
+                st.error(
+                    f"⚠️ High failure rate detected: "
+                    f"{failure_rate:.1f}% of predictions indicate machine failure."
+                )
+
+            elif failure_rate > 0:
+
+                st.warning(
+                    f"⚠️ {failure_rate:.1f}% of predictions indicate "
+                    "potential machine failure."
+                )
+
+            else:
+
+                st.success(
+                    "✅ No machine failures detected in the current dataset."
+                )
+
+            st.write(
+                f"Average predicted failure probability: "
+                f"**{avg_probability:.1f}%**"
+            )
+
+            st.write(
+                f"Critical-risk predictions: "
+                f"**{critical}**"
+            )
 
     else:
 
