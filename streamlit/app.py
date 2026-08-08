@@ -363,15 +363,7 @@ if predict_button:
 
         st.error(f"Unexpected Error: {e}")
 
-# ==========================================================
-# FOOTER
-# ==========================================================
 
-st.markdown("---")
-
-st.caption(
-    "🏭 Industrial AI Monitoring Platform | FastAPI • Streamlit • Scikit-learn"
-)
 st.markdown("---")
 st.header("📊 Prediction History")
 
@@ -689,3 +681,12 @@ except requests.exceptions.ConnectionError:
 except Exception as e:
 
     st.error(f"❌ Could not load prediction history: {e}")
+    # ==========================================================
+# FOOTER
+# ==========================================================
+
+st.markdown("---")
+
+st.caption(
+    "🏭 Industrial AI Monitoring Platform | FastAPI • Streamlit • Scikit-learn"
+)
