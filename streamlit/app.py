@@ -369,7 +369,6 @@ if predict_button:
 
         st.error(f"Unexpected Error: {e}")
 
-
 st.markdown("---")
 st.header("📊 Prediction History")
 
@@ -407,21 +406,24 @@ try:
             machine_filter = st.multiselect(
                 "Machine Type",
                 options=sorted(df["Machine"].unique()),
-                default=list(df["Machine"].unique())
+                default=list(df["Machine"].unique()),
+                key="history_machine_filter"
             )
 
         with col2:
             risk_filter = st.multiselect(
                 "Risk Level",
                 options=sorted(df["Risk"].unique()),
-                default=list(df["Risk"].unique())
+                default=list(df["Risk"].unique()),
+                key="history_risk_filter"
             )
 
         with col3:
             prediction_filter = st.multiselect(
                 "Prediction",
                 options=sorted(df["Prediction"].unique()),
-                default=list(df["Prediction"].unique())
+                default=list(df["Prediction"].unique()),
+                key="history_prediction_filter"
             )
 
         filtered_df = df[
@@ -436,11 +438,46 @@ try:
 
         st.subheader("Recent Predictions")
 
+        display_df = filtered_df[
+            [
+                "Timestamp",
+                "Machine",
+                "Prediction",
+                "Probability (%)",
+                "Risk"
+            ]
+        ]
+
         st.dataframe(
-            filtered_df,
+            display_df,
             width="stretch",
             hide_index=True
         )
+
+        # ----------------------------
+        # AI Maintenance Analysis
+        # ----------------------------
+
+        st.subheader("🤖 AI Maintenance Analysis")
+
+        for i, row in filtered_df.iterrows():
+
+            prediction = row["Prediction"]
+            risk = row["Risk"]
+            timestamp = row["Timestamp"]
+
+            with st.expander(
+                f"{prediction} • {risk} • {timestamp}"
+            ):
+
+                explanation = row.get("ai_explanation")
+
+                if explanation:
+                    st.markdown(explanation)
+                else:
+                    st.info(
+                        "No AI explanation was stored for this prediction."
+                    )
 
         # ----------------------------
         # CSV Export
@@ -452,11 +489,9 @@ try:
             label="📥 Download Prediction History",
             data=csv,
             file_name="prediction_history.csv",
-            mime="text/csv"
+            mime="text/csv",
+            key="history_csv_download"
         )
-
-        st.markdown("---")
-
         # ==========================================================
         # ANALYTICS DASHBOARD
         # ==========================================================

@@ -3,7 +3,8 @@ from app.database import get_connection
 
 def save_prediction(result, data, physics):
 
-    print("AI EXPLANATION BEING SAVED:", result.get("ai_explanation"))
+    print("========== SAVE PREDICTION CALLED ==========")
+    print("AI EXPLANATION:", result.get("ai_explanation"))
 
     conn = get_connection()
     cur = conn.cursor()
@@ -29,7 +30,7 @@ def save_prediction(result, data, physics):
         )
         VALUES (
             %s, %s, %s, %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s, %s, %s
+            %s, %s, %s, %s, %s, %s
         )
         """,
         (
@@ -53,6 +54,8 @@ def save_prediction(result, data, physics):
 
     conn.commit()
 
+    print("========== PREDICTION SAVED ==========")
+
     cur.close()
     conn.close()
 
@@ -69,7 +72,8 @@ def get_all_predictions():
             machine_type,
             prediction,
             probability,
-            risk_level
+            risk_level,
+            ai_explanation
         FROM predictions
         ORDER BY id DESC
         """
@@ -81,12 +85,13 @@ def get_all_predictions():
     conn.close()
 
     return [
-        {
-            "timestamp": row[0],
-            "machine_type": row[1],
-            "prediction": row[2],
-            "probability": row[3],
-            "risk_level": row[4]
-        }
-        for row in rows
-    ]
+    {
+        "timestamp": row[0],
+        "machine_type": row[1],
+        "prediction": row[2],
+        "probability": row[3],
+        "risk_level": row[4],
+        "ai_explanation": row[5]
+    }
+    for row in rows
+]

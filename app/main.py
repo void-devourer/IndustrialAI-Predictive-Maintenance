@@ -25,7 +25,7 @@ def home():
 
 @app.post("/predict")
 def predict(data: MachineInput):
-
+    print("🔥🔥🔥 PREDICT ENDPOINT HIT 🔥🔥🔥")
     # 1. Run machine-learning prediction
     result = predict_machine(data)
 
@@ -62,6 +62,8 @@ def predict(data: MachineInput):
 
     # 5. Add AI explanation to the response
     result["ai_explanation"] = ai_explanation
+    print("ABOUT TO SAVE PREDICTION")
+    print("AI EXPLANATION:", ai_explanation)
 
     # 6. Save prediction to PostgreSQL
     save_prediction(
@@ -69,6 +71,7 @@ def predict(data: MachineInput):
         data=data,
         physics=physics
     )
+    print("PREDICTION SAVE FINISHED")
 
     # 7. Return complete result to Streamlit
     return result
