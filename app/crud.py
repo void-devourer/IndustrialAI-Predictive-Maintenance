@@ -29,8 +29,9 @@ def save_prediction(result, data, physics):
             ai_explanation
         )
         VALUES (
-            %s, %s, %s, %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s, %s
+            %s, %s, %s, %s, %s,
+            %s, %s, %s, %s, %s,
+            %s, %s, %s, %s, %s
         )
         """,
         (
