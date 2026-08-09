@@ -370,7 +370,7 @@ st.header("📊 Prediction History")
 try:
     response = requests.get(
         f"{API_URL}/history",
-        timeout=5
+        timeout=30
     )
 
     response.raise_for_status()
