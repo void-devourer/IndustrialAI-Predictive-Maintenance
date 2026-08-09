@@ -45,20 +45,29 @@ def predict(data: MachineInput):
     knowledge = retrieve_knowledge(query)
 
     # 4. Generate AI explanation using retrieved knowledge
-    ai_explanation = generate_maintenance_explanation(
-        prediction=result["prediction"],
-        probability=result["failure_probability"],
-        risk_level=result["risk_level"],
-        machine_data={
-            "air_temp": data.air_temp,
-            "process_temp": data.process_temp,
-            "rotational_speed": data.rotational_speed,
-            "torque": data.torque,
-            "tool_wear": data.tool_wear,
-            "machine_type": data.machine_type,
-        },
-        retrieved_knowledge=knowledge,
-    )
+    try:
+        ai_explanation = generate_maintenance_explanation(
+            prediction=result["prediction"],
+            probability=result["failure_probability"],
+            risk_level=result["risk_level"],
+            machine_data={
+                "air_temp": data.air_temp,
+                "process_temp": data.process_temp,
+                "rotational_speed": data.rotational_speed,
+                "torque": data.torque,
+                "tool_wear": data.tool_wear,
+                "machine_type": data.machine_type,
+            },
+            retrieved_knowledge=knowledge,
+        )
+
+    except Exception as e:
+        print("AI EXPLANATION FAILED:", e)
+
+        ai_explanation = (
+            "AI explanation is temporarily unavailable. "
+            "The machine prediction and risk assessment are still valid."
+        )
 
     # 5. Add AI explanation to the response
     result["ai_explanation"] = ai_explanation
