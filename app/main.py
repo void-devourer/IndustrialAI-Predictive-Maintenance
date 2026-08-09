@@ -71,8 +71,6 @@ def predict(data: MachineInput):
 
     # 5. Add AI explanation to the response
     result["ai_explanation"] = ai_explanation
-    print("ABOUT TO SAVE PREDICTION")
-    print("AI EXPLANATION:", ai_explanation)
 
     # 6. Save prediction to PostgreSQL
     save_prediction(
