@@ -161,7 +161,7 @@ st.markdown("---")
 # ==========================================================
 API_URL = os.getenv(
     "API_URL",
-    "https://industrialai-predictive-maintenance.onrender.com"
+    "http://127.0.0.1:8000"
 )
 
 if predict_button:
@@ -188,7 +188,7 @@ if predict_button:
 
             },
 
-            timeout=5
+            timeout=30
 
         )
 
@@ -310,6 +310,12 @@ if predict_button:
                 st.success(action)
 
         st.markdown("---")
+        # ==========================================================
+        # AI Maintenance Analysis
+        # ==========================================================
+        if "ai_explanation" in result and result["ai_explanation"]:
+            st.subheader("🤖 AI Maintenance Analysis")
+            st.markdown(result["ai_explanation"])
 
         # ==========================================================
         # PHYSICS FEATURE SUMMARY

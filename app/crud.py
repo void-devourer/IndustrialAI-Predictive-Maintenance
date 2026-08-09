@@ -3,10 +3,13 @@ from app.database import get_connection
 
 def save_prediction(result, data, physics):
 
-    conn = get_connection()
-    cursor = conn.cursor()
+    print("AI EXPLANATION BEING SAVED:", result.get("ai_explanation"))
 
-    cursor.execute("""
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
         INSERT INTO predictions (
             request_id,
             timestamp,
@@ -21,32 +24,36 @@ def save_prediction(result, data, physics):
             wear_progression,
             prediction,
             probability,
-            risk_level
+            risk_level,
+            ai_explanation
         )
         VALUES (
-            %s, %s, %s, %s, %s, %s, %s,
+            %s, %s, %s, %s, %s, %s, %s, %s,
             %s, %s, %s, %s, %s, %s, %s
         )
-    """, (
-        result["request_id"],
-        result["timestamp"],
-        data.machine_type,
-        data.air_temp,
-        data.process_temp,
-        data.rotational_speed,
-        data.torque,
-        data.tool_wear,
-        physics["power"],
-        physics["temp_difference"],
-        physics["wear_progression"],
-        result["prediction"],
-        result["failure_probability"],
-        result["risk_level"]
-    ))
+        """,
+        (
+            result["request_id"],
+            result["timestamp"],
+            data.machine_type,
+            data.air_temp,
+            data.process_temp,
+            data.rotational_speed,
+            data.torque,
+            data.tool_wear,
+            physics["power"],
+            physics["temp_difference"],
+            physics["wear_progression"],
+            result["prediction"],
+            result["failure_probability"],
+            result["risk_level"],
+            result.get("ai_explanation", "")
+        )
+    )
 
     conn.commit()
 
-    cursor.close()
+    cur.close()
     conn.close()
 
 
@@ -55,7 +62,8 @@ def get_all_predictions():
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT
             timestamp,
             machine_type,
@@ -64,7 +72,8 @@ def get_all_predictions():
             risk_level
         FROM predictions
         ORDER BY id DESC
-    """)
+        """
+    )
 
     rows = cursor.fetchall()
 
