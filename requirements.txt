@@ -8,3 +8,5 @@ joblib
 requests
 pydantic
 psycopg2-binary
+python-dotenv==1.1.1
+google-genai
