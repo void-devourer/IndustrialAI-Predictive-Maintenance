@@ -161,7 +161,7 @@ st.markdown("---")
 # ==========================================================
 API_URL = os.getenv(
     "API_URL",
-    "http://127.0.0.1:8000"
+    "https://industrialai-predictive-maintenance.onrender.com"
 )
 
 if predict_button:
