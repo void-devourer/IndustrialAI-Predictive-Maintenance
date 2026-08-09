@@ -39,7 +39,13 @@ Machine Learning Model
 ```
 
 ---
+## 🚀 Live Demo
 
+- **Streamlit Dashboard:** https://industrialai-dashboard.onrender.com
+- **FastAPI Backend:** https://industrialai-predictive-maintenance.onrender.com
+- **API Documentation:** https://industrialai-predictive-maintenance.onrender.com/docs
+
+  
 ## ✨ Key Features
 
 ### 🤖 Machine Learning Prediction
