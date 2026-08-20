@@ -25,7 +25,6 @@ def home():
 
 @app.post("/predict")
 def predict(data: MachineInput):
-    print("🔥🔥🔥 PREDICT ENDPOINT HIT 🔥🔥🔥")
     # 1. Run machine-learning prediction
     result = predict_machine(data)
 
